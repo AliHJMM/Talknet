@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"talknet/Database"
 	"talknet/server/sessions"
@@ -23,6 +25,9 @@ var allowedExtensions = map[string]bool{
 }
 
 const maxUploadSize = 20 * 1024 * 1024 // Max file size (20MB)
+
+// Upload directory
+const uploadDir = "./uploads"
 
 func NewPostHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	userID, isLoggedIn := sessions.GetSessionUserID(r)
@@ -101,13 +106,19 @@ func NewPostHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Save the image in the uploads folder
-		uploadDir := "./uploads"
+		// Generate a unique file name
+		imagePath = generateUniqueFileName(userID, ext)
+
+		// Ensure the upload directory exists
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
-			os.Mkdir(uploadDir, os.ModePerm)
+			err = os.Mkdir(uploadDir, os.ModePerm)
+			if err != nil {
+				http.Error(w, "Failed to create upload directory", http.StatusInternalServerError)
+				return
+			}
 		}
 
-		imagePath = fmt.Sprintf("%s/%d%s", uploadDir, userID, ext)
+		// Save the image in the uploads folder
 		outFile, err := os.Create(imagePath)
 		if err != nil {
 			http.Error(w, "Failed to save image", http.StatusInternalServerError)
@@ -166,4 +177,12 @@ func NewPostHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// Function to generate a unique file name
+func generateUniqueFileName(userID int, ext string) string {
+	// Use a combination of userID, timestamp, and a random number to ensure uniqueness
+	timestamp := strconv.FormatInt(time.Now().UnixNano(), 10)
+	randomNumber := rand.Intn(10000) // Adds randomness
+	return fmt.Sprintf("%s/%d_%s_%d%s", uploadDir, userID, timestamp, randomNumber, ext)
 }
