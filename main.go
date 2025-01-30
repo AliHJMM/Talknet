@@ -90,6 +90,9 @@ func main() {
 	// Logout handler
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 
+	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads"))))
+
+
 	// Start the server
 	fmt.Println("Server running at http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)

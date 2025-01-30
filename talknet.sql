@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS Posts (
     user_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
+    image_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
 );

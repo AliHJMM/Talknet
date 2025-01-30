@@ -23,21 +23,21 @@
             word-break: break-word; /* Ensure long words break properly */
         }
         .comment-content {
-            white-space: pre-wrap; /* Preserve line breaks in comments */
-            word-wrap: break-word; /* Allow long words to break */
-            word-break: break-word; /* Ensure long words break properly */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-word;
         }
     </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
     <div id="hiddenDiv" style="display:none;">comment</div>
+
     <!-- Navbar -->
     <header class="navbar shadow">
         <div class="container mx-auto flex items-center justify-between h-16 px-4 md:px-6">
             <a class="flex items-center gap-2 text-lg font-semibold text-gray-800" href="/">
                 <span>Talknet</span>
             </a>
-        
         </div>
     </header>
 
@@ -45,6 +45,19 @@
     <main class="container mx-auto p-6 main-bg shadow-md rounded-lg mt-8 mb-auto">
         <h2 class="text-4xl font-bold mb-4">{{ .Post.Title }}</h2>
         <p class="text-gray-600 mb-2">Posted by <strong>{{ .Username }}</strong> on {{ .Post.CreatedAt }}</p>
+
+<!-- Display Post Image (Wider) -->
+{{ if .Post.ImageURL }}
+<div class="mt-6 flex justify-center">
+    <img src="{{ .Post.ImageURL }}" alt="Post Image" 
+         class="w-[90%] md:w-[95%] lg:w-[100%] max-h-[500px] object-cover rounded-lg shadow-lg" />
+</div>
+{{ end }}
+
+
+
+
+
         <p class="text-lg mb-6 post-content">{{ .Post.Content }}</p>
 
         <!-- Comments Section -->
@@ -85,7 +98,7 @@
             <textarea maxlength="150" name="content" rows="4" class="w-full bg-white border rounded p-2" required></textarea>
             <input type="hidden" name="post_id" value="{{ .Post.ID }}">
             <br><br>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded" >Add Comment</button>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Add Comment</button>
         </form>
     </main>
 
@@ -100,6 +113,7 @@
             </div>
         </div>
     </footer>
+
     <script src="/static/js/filter.js"></script>
     <script src="/static/js/like-dislike.js"></script>
 </body>

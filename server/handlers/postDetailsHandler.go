@@ -98,7 +98,7 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		Username string
 		Comments []CommentWithUser
 	}{
-		Post:     post,
+		Post:     post,  // Now contains ImageURL
 		Username: user.Username,
 		Comments: commentsWithUser,
 	})

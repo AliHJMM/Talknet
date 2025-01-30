@@ -45,11 +45,12 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	username, err := Database.GetUsername(db, profileID)
-	if err != nil {
-		log.Printf("Failed to get username: %v", err)
-		RenderErrorPage(w, "You are not logged in", http.StatusUnauthorized)
-		return
-	}
+if err != nil {
+    log.Printf("Failed to get username for profile ID %d: %v", profileID, err)
+    RenderErrorPage(w, "User not found", http.StatusNotFound)
+    return
+}
+
 
 	isHisProfile := profileID == userID
 
@@ -76,19 +77,19 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			log.Printf("Failed to get user: %v", err)
 			continue
 		}
-
+	
 		postCategories, err := Database.GetCategoryNamesByPostID(db, post.ID)
 		if err != nil {
 			log.Printf("Failed to get categories: %v", err)
 			continue
 		}
-
+	
 		likes, dislikes, err := Database.GetReactionsByPostID(db, post.ID)
 		if err != nil {
 			log.Printf("Failed to get likes: %v", err)
 			continue
 		}
-
+	
 		likeCount := len(likes)
 		dislikeCount := len(dislikes)
 		comments, err := Database.GetCommentsByPostID(db, post.ID)
@@ -96,7 +97,7 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			log.Printf("Failed to get comments: %v", err)
 			continue
 		}
-
+	
 		reaction := -1
 		if isLoggedIn {
 			reaction, err = Database.CheckReactionExists(db, post.ID, userID, "post")
@@ -105,12 +106,13 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 		}
-
+	
 		myPostDataList = append(myPostDataList, PostData{
 			ID:             post.ID,
 			Username:       user.Username,
 			Title:          post.Title,
 			Content:        post.Content,
+			ImageURL:       post.ImageURL, // ✅ Ensure ImageURL is assigned
 			CreatedAt:      timeAgo(post.CreatedAt),
 			PostCategories: postCategories,
 			LikeCount:      likeCount,
@@ -119,6 +121,7 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			Reaction:       reaction,
 		})
 	}
+	
 
 	// Process Liked Posts
 	for _, post := range likedPosts {
@@ -162,6 +165,7 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			Username:       user.Username,
 			Title:          post.Title,
 			Content:        post.Content,
+			ImageURL:       post.ImageURL,  // ✅ Add this line
 			CreatedAt:      timeAgo(post.CreatedAt),
 			PostCategories: postCategories,
 			LikeCount:      likeCount,
