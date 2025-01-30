@@ -6,11 +6,11 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"time"
-
+	"sort"
 	"talknet/Database"
 	"talknet/server/sessions"
 	"talknet/structs"
+	"time"
 )
 
 type StaticPageData struct {
@@ -25,7 +25,7 @@ type PostData struct {
 	Content        string
 	CreatedAt      string
 	PostCategories []structs.Category
-	ImageURL    string  // ✅ Add this field
+	ImageURL       string
 	LikeCount      int
 	DislikeCount   int
 	CommentCount   int
@@ -80,60 +80,63 @@ func HomeHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	// Prepare the dynamic post data for rendering
 	var postDataList []PostData
 
-for _, post := range posts {
-    user, err := Database.GetUserByID(db, post.UserID)
-    if err != nil {
-        log.Printf("Failed to get user: %v", err)
-        continue
-    }
+	for _, post := range posts {
+		user, err := Database.GetUserByID(db, post.UserID)
+		if err != nil {
+			log.Printf("Failed to get user: %v", err)
+			continue
+		}
 
-    postCategories, err := Database.GetCategoryNamesByPostID(db, post.ID)
-    if err != nil {
-        log.Printf("Failed to get categories: %v", err)
-        continue
-    }
+		postCategories, err := Database.GetCategoryNamesByPostID(db, post.ID)
+		if err != nil {
+			log.Printf("Failed to get categories: %v", err)
+			continue
+		}
 
-    likes, dislikes, err := Database.GetReactionsByPostID(db, post.ID)
-    if err != nil {
-        log.Printf("Failed to get likes: %v", err)
-        continue
-    }
-    likeCount := len(likes)
-    dislikeCount := len(dislikes)
+		likes, dislikes, err := Database.GetReactionsByPostID(db, post.ID)
+		if err != nil {
+			log.Printf("Failed to get likes: %v", err)
+			continue
+		}
+		likeCount := len(likes)
+		dislikeCount := len(dislikes)
 
-    comments, err := Database.GetCommentsByPostID(db, post.ID)
-    if err != nil {
-        log.Printf("Failed to get comments: %v", err)
-        continue
-    }
+		comments, err := Database.GetCommentsByPostID(db, post.ID)
+		if err != nil {
+			log.Printf("Failed to get comments: %v", err)
+			continue
+		}
 
-    reaction := -1
-    if isLoggedIn {
-        reaction, err = Database.CheckReactionExists(db, post.ID, userSessionID, "post")
-        if err != nil {
-            log.Printf("Failed to check reaction: %v", err)
-            continue
-        }
-    }
+		reaction := -1
+		if isLoggedIn {
+			reaction, err = Database.CheckReactionExists(db, post.ID, userSessionID, "post")
+			if err != nil {
+				log.Printf("Failed to check reaction: %v", err)
+				continue
+			}
+		}
 
-    postDataList = append(postDataList, PostData{
-        ID:             post.ID,
-        Username:       user.Username,
-        Title:          post.Title,
-        Content:        post.Content,
-        CreatedAt:      timeAgo(post.CreatedAt),
-        PostCategories: postCategories,
-        ImageURL:       post.ImageURL, // ✅ Now setting ImageURL
-        LikeCount:      likeCount,
-        DislikeCount:   dislikeCount,
-        CommentCount:   len(comments),
-        Reaction:       reaction,
-    })
-}
+		postDataList = append(postDataList, PostData{
+			ID:             post.ID,
+			Username:       user.Username,
+			Title:          post.Title,
+			Content:        post.Content,
+			CreatedAt:      timeAgo(post.CreatedAt),
+			PostCategories: postCategories,
+			ImageURL:       post.ImageURL, // Now setting ImageURL
+			LikeCount:      likeCount,
+			DislikeCount:   dislikeCount,
+			CommentCount:   len(comments),
+			Reaction:       reaction,
+		})
+	}
 
-
-	// Reverse the order of posts
-	postDataList = reversePosts(postDataList)
+	// Sort the posts by CreatedAt in descending order
+	sort.Slice(postDataList, func(i, j int) bool {
+		createdAtI, _ := time.Parse(time.RFC3339, postDataList[i].CreatedAt) // Assuming the date format is RFC3339
+		createdAtJ, _ := time.Parse(time.RFC3339, postDataList[j].CreatedAt)
+		return createdAtI.After(createdAtJ) // Sort by most recent
+	})
 
 	// Render the template with both static (categories, isLoggedIn) and dynamic (posts) data
 	err = templates.ExecuteTemplate(w, "index.html", struct {
@@ -176,11 +179,4 @@ func pluralize(n int) string {
 		return ""
 	}
 	return "s"
-}
-
-func reversePosts(posts []PostData) []PostData {
-	for i, j := 0, len(posts)-1; i < j; i, j = i+1, j-1 {
-		posts[i], posts[j] = posts[j], posts[i]
-	}
-	return posts
 }
