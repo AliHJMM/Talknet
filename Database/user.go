@@ -65,3 +65,12 @@ func GetUsername(db *sql.DB, id int) (string, error) {
 	}
 	return username, nil
 }
+
+
+// GetUserByEmail retrieves a user from the database using their email.
+func GetUserByEmail(db *sql.DB, email string) (structs.User, error) {
+	row := db.QueryRow("SELECT id, username, email, password, created_at FROM users WHERE email = ?", email)
+	var user structs.User
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
+	return user, err
+}

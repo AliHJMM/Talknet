@@ -1,65 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="/static/styles/Login.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Talknet</title>
+    <link rel="stylesheet" href="/static/styles/Login.css" />
+    <style>
+      /* Inline styles for Google sign in box */
+      .google-box {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        margin: 1rem 0;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+      }
+      .google-box:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      }
+      .google-box img {
+        vertical-align: middle;
+        height: 24px;
+        margin-right: 8px;
+      }
+      .google-box span {
+        vertical-align: middle;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
     <form action="/login" method="post">
-    <main class="flex-1 bg-muted flex items-center justify-center">
+      <main class="flex-1 bg-muted flex items-center justify-center">
         <div class="max-w-md w-full px-4 md:px-6">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title text-2xl">Login</h2>
-                    <p class="card-description">Enter Username & Password to access <span class="Talknet">Talknet.</span></p>
-                </div>
-                <div class="card-content space-y-4">
-                    <div class="space-y-2">
-                        <label for="username">Username</label>
-                        <input id="username" name="username" type="text" placeholder="Leo Messi" required>
-                    </div>
-                    <div class="space-y-2">
-                        <label for="password">Password</label>
-                        <input id="password" name="password" type="password" placeholder="••••••••" required>
-                    </div>
-                    <p id="category-error-message" class="text-red-500 mt-2 " style="color: red;">{{.ErrorMsg}}</p>
-                    <div class="checkbox-container">
-                        <input id="show-password" type="checkbox">
-                        <label for="show-password" class="cursor-pointer">Show Password</label>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button class="w-full btn-primary" type="submit">Sign in</button>
-                    <p class="text-center mt-4">
-                        <a href="/register" class="text-black">Sign Up</a>
-                    </p>
-                </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title text-2xl">Login</h2>
+              <p class="card-description">
+                Enter Username &amp; Password to access
+                <span class="Talknet">Talknet.</span>
+              </p>
             </div>
+            <div class="card-content space-y-4">
+              <div class="space-y-2">
+                <label for="username">Username</label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Leo Messi"
+                  required
+                />
+              </div>
+              <div class="space-y-2">
+                <label for="password">Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <p
+                id="category-error-message"
+                class="text-red-500 mt-2"
+                style="color: red"
+              >
+                {{.ErrorMsg}}
+              </p>
+              <div class="checkbox-container">
+                <input id="show-password" type="checkbox" />
+                <label for="show-password" class="cursor-pointer"
+                  >Show Password</label
+                >
+              </div>
+            </div>
+            <!-- Google Sign In Box placed within the card -->
+            <!-- Existing login form code -->
+
+            <!-- Add GitHub Sign In Box inside your main card -->
+            <div class="card-content">
+              <!-- Google sign-in box is already here -->
+              <div
+                class="google-box"
+                onclick="window.location.href='/auth/google/login'"
+              >
+                <img src="/static/images/Google.png" alt="Google Icon" />
+                <span>Sign in with Google</span>
+              </div>
+              <!-- New GitHub sign-in box -->
+              <div
+                class="github-box"
+                onclick="window.location.href='/auth/github/login'"
+                style="
+                  border: 1px solid #ccc;
+                  border-radius: 8px;
+                  padding: 1rem;
+                  text-align: center;
+                  margin-top: 1rem;
+                  cursor: pointer;
+                  transition: box-shadow 0.3s ease;
+                "
+              >
+                <img
+                  src="/static/images/Github.jpg"
+                  alt="GitHub Icon"
+                  style="
+                    vertical-align: middle;
+                    height: 24px;
+                    margin-right: 8px;
+                  "
+                />
+                <span
+                  style="
+                    vertical-align: middle;
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                  "
+                  >Sign in with GitHub</span
+                >
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <button class="w-full btn-primary" type="submit">Sign in</button>
+              <p class="text-center mt-4">
+                <a href="/register" class="text-black">Sign Up</a>
+              </p>
+            </div>
+          </div>
         </div>
-    </main>
-</form>
+      </main>
+    </form>
 
     <!-- Footer -->
     <footer class="footer mt-8">
-        <div class="footer-container container mx-auto">
-            <p>&copy; 2024 Talknet. All rights reserved.</p>
-            <div class="footer-right footer-links">
-                <a href="#Terms">Terms of Service</a>
-                <a href="#Policy">Privacy Policy</a>
-                <a href="#ContactUs">Contact Us</a>
-            </div>
+      <div class="footer-container container mx-auto">
+        <p>&copy; 2024 Talknet. All rights reserved.</p>
+        <div class="footer-right footer-links">
+          <a href="#Terms">Terms of Service</a>
+          <a href="#Policy">Privacy Policy</a>
+          <a href="#ContactUs">Contact Us</a>
         </div>
+      </div>
     </footer>
 
     <script>
-        const passwordInput = document.getElementById('password');
-        const showPasswordCheckbox = document.getElementById('show-password');
-        
-        showPasswordCheckbox.addEventListener('change', () => {
-            passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
-        });
+      const passwordInput = document.getElementById("password");
+      const showPasswordCheckbox = document.getElementById("show-password");
+
+      showPasswordCheckbox.addEventListener("change", () => {
+        passwordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+      });
     </script>
-</body>
+  </body>
 </html>

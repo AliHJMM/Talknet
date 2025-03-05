@@ -87,6 +87,19 @@ func main() {
 		handlers.RenderErrorPage(w, "Error Message", http.StatusInternalServerError)
 	})
 
+	// Google OAuth endpoints
+http.HandleFunc("/auth/google/login", handlers.GoogleLoginHandler)
+http.HandleFunc("/auth/google/callback", func(w http.ResponseWriter, r *http.Request) {
+    handlers.GoogleCallbackHandler(database, w, r)
+})
+
+// GitHub OAuth endpoints – make sure these are not nested inside any other handler!
+http.HandleFunc("/auth/github/login", handlers.GithubLoginHandler)
+http.HandleFunc("/auth/github/callback", func(w http.ResponseWriter, r *http.Request) {
+    handlers.GithubCallbackHandler(database, w, r)
+})
+
+
 	// Logout handler
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 
