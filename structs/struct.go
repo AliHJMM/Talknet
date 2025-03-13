@@ -68,3 +68,12 @@ type PostCategories struct {
 	Category_id   int    `json:"category_id"`
 	Category_name string `json:"category_name"`
 }
+
+type Notification struct {
+	CreatedAt   time.Time `json:"created_at"`
+	PostTitle   string    `json:"post_title"`
+	PostOwner   string    `json:"post_owner"`
+	ActionTaker string    `json:"action_taker"`
+	Action      string    `json:"action"` // "like", "dislike", "comment"
+	CommentText *string   `json:"comment_text,omitempty"`
+}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activity Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="antialiased flex flex-col min-h-screen">
+    <!-- Navbar (copied from your index page, now using .IsLoggedIn instead of .StaticData) -->
+    <header class="navbar bg-card border-b shadow-sm">
+      <div
+        class="container mx-auto flex items-center justify-between h-16 px-4 md:px-6"
+      >
+        <a
+          class="flex items-center gap-2 text-lg font-semibold text-card-foreground"
+          href="/"
+        >
+          <div class="w-6 h-6 text-[#6366F1]"></div>
+          <span>Talknet</span>
+        </a>
+        <nav class="hidden md:flex items-center">
+          {{ if .IsLoggedIn }}
+          <a
+            href="/post"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-plus text-lg"></i>
+            <span class="sr-only">Add Post</span>
+          </a>
+          <a
+            href="/profile"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-user text-lg"></i>
+            <span class="sr-only">Profile</span>
+          </a>
+          <a
+            href="/activity"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-bell text-lg"></i>
+            <span class="sr-only">Activity</span>
+          </a>
+          <a
+            href="/logout"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-sign-out-alt text-lg"></i>
+            <span class="sr-only">Logout</span>
+          </a>
+          {{ else }}
+          <a
+            href="/login"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-sign-in-alt text-lg"></i>
+            <span class="sr-only">Login</span>
+          </a>
+          {{ end }}
+        </nav>
+        <div class="md:hidden">
+          <button class="variant-ghost size-icon">
+            <div class="w-6 h-6 text-card-foreground"></div>
+            <span class="sr-only">Toggle menu</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-6 flex-grow">
+      <h1 class="text-3xl font-bold mb-6">Activity Notifications</h1>
+      {{ if .Notifications }}
+      <ul>
+        {{ range .Notifications }}
+        <li class="mb-4 border p-4 rounded">
+          <p class="break-words">
+            <strong>{{ .ActionTaker }}</strong> {{ .Action }} your post
+            <em>{{ .PostTitle }}</em> ({{ .CreatedAt }})
+          </p>
+          {{ if eq .Action "comment" }}
+          <p class="mt-2 break-words">Comment: {{ .CommentText }}</p>
+          {{ end }}
+        </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <p>No notifications yet.</p>
+      {{ end }}
+    </main>
+
+    <!-- Footer (consistent with your index page) -->
+    <footer class="footer-bg border-t shadow-sm">
+      <div
+        class="container mx-auto flex justify-between items-center p-4 md:p-6 text-muted-foreground"
+      >
+        <p>&copy; 2024 Talknet. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#Terms" class="hover:text-card-foreground hover:underline"
+            >Terms of Service</a
+          >
+          <a href="#Policy" class="hover:text-card-foreground hover:underline"
+            >Privacy Policy</a
+          >
+          <a
+            href="#ContactUs"
+            class="hover:text-card-foreground hover:underline"
+            >Contact Us</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

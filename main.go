@@ -100,6 +100,13 @@ func main() {
 	http.HandleFunc("/delete_post", func(w http.ResponseWriter, r *http.Request) {
 		handlers.DeletePostHandler(database, w, r)
 	})
+
+	http.HandleFunc("/activity", func(w http.ResponseWriter, r *http.Request) {
+		handlers.ActivityHandler(database, w, r)
+	})
+	
+	
+	
 	
 	
 
