@@ -13,6 +13,22 @@
     />
     <!-- Your custom CSS -->
     <link rel="stylesheet" href="/static/styles/index.css" />
+    <style>
+      .category-button {
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid hsl(var(--border));
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .category-button.selected {
+        background-color: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+      }
+    </style>
   </head>
   <body class="antialiased flex flex-col min-h-screen">
     <!-- Navbar -->
@@ -79,9 +95,13 @@
     <!-- Main Content -->
     <main class="container mx-auto p-6 flex-grow">
       <h2 class="text-3xl font-bold mb-4">Edit Post</h2>
-      <form action="/edit_post" method="POST">
-        <!-- Use .Post.* because we pass a composite data struct -->
+      <!-- Use multipart/form-data for image upload -->
+      <form action="/edit_post" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="post_id" value="{{ .Post.ID }}" />
+        <!-- Store old image path (if any) so we know if user didn't upload a new one -->
+        <input type="hidden" name="old_image" value="{{ .Post.ImageURL }}" />
+
+        <!-- Title -->
         <div class="mb-4">
           <label class="block text-gray-700">Title</label>
           <input
@@ -92,6 +112,8 @@
             required
           />
         </div>
+
+        <!-- Content -->
         <div class="mb-4">
           <label class="block text-gray-700">Content</label>
           <textarea
@@ -101,15 +123,72 @@
             required
           >{{- .Post.Content -}}</textarea>
         </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
-          Update Post
-        </button>
-        <a
-          href="/post-details?post_id={{ .Post.ID }}"
-          class="ml-4 text-gray-600 hover:underline"
-        >
-          Cancel
-        </a>
+
+        <!-- Image Preview (if it exists) -->
+        {{ if .Post.ImageURL }}
+        <div class="mb-4">
+          <label class="block text-gray-700">Current Image</label>
+          <img
+            src="{{ .Post.ImageURL }}"
+            alt="Current Post Image"
+            class="max-w-xs rounded shadow-lg mt-2"
+          />
+        </div>
+        {{ end }}
+
+        <!-- Image Upload (optional) -->
+        <div class="mb-4">
+          <label class="block text-gray-700">Replace Image (optional)</label>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            class="mt-1 block border rounded p-2"
+          />
+          <small class="text-gray-500"
+            >Leave blank if you don't want to change the image</small
+          >
+        </div>
+
+        <!-- Categories (Pre-Select the Post's Categories) -->
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold mb-2"
+            >Categories:</label
+          >
+          <div class="flex flex-wrap gap-3" id="categories-container">
+            {{ range .AllCategories }}
+            {{ $catID := .ID }}
+            {{ $catName := .Name }}
+            <!-- Check if this category is in PostCategories -->
+            {{ $selected := false }}
+            {{ range $.PostCategories }}
+              {{ if eq .ID $catID }}
+                {{ $selected = true }}
+              {{ end }}
+            {{ end }}
+            <button
+              type="button"
+              class="category-button {{ if $selected }}selected{{ end }}"
+              onclick="toggleCategory(this, '{{ $catID }}')"
+            >
+              {{ $catName }}
+            </button>
+            {{ end }}
+          </div>
+          <!-- Hidden inputs will go here for selected categories -->
+        </div>
+
+        <div class="mt-6">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+            Update Post
+          </button>
+          <a
+            href="/post-details?post_id={{ .Post.ID }}"
+            class="ml-4 text-gray-600 hover:underline"
+          >
+            Cancel
+          </a>
+        </div>
       </form>
     </main>
 
@@ -134,5 +213,25 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      // Pre-fill hidden inputs for categories that are selected
+      // so the server knows which categories are chosen.
+      function toggleCategory(button, categoryId) {
+        button.classList.toggle("selected");
+        let existingInput = document.querySelector(
+          `input[name='category[]'][value='${categoryId}']`
+        );
+        if (existingInput) {
+          existingInput.remove();
+        } else {
+          const newInput = document.createElement("input");
+          newInput.type = "hidden";
+          newInput.name = "category[]";
+          newInput.value = categoryId;
+          document.getElementById("categories-container").appendChild(newInput);
+        }
+      }
+    </script>
   </body>
 </html>
