@@ -4,41 +4,135 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Post</title>
+    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" href="/static/styles/index.css" />
   </head>
-  <body class="antialiased">
-    <div class="container mx-auto p-6">
+  <body class="antialiased flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <header class="navbar">
+      <div
+        class="container mx-auto flex items-center justify-between h-16 px-4 md:px-6"
+      >
+        <a
+          href="/"
+          class="flex items-center gap-2 text-lg font-semibold text-card-foreground"
+        >
+          <div class="w-6 h-6 text-[#6366F1]"></div>
+          <span>Talknet</span>
+        </a>
+        <nav class="hidden md:flex items-center">
+          {{ if .IsLoggedIn }}
+          <a
+            href="/post"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-plus text-lg"></i>
+            <span class="sr-only">Add Post</span>
+          </a>
+          <a
+            href="/profile"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-user text-lg"></i>
+            <span class="sr-only">Profile</span>
+          </a>
+          <a
+            href="/activity"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-bell text-lg"></i>
+            <span class="sr-only">Activity</span>
+          </a>
+          <a
+            href="/logout"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-sign-in-alt text-lg"></i>
+            <span class="sr-only">Logout</span>
+          </a>
+          {{ else }}
+          <a
+            href="/login"
+            class="text-muted-foreground hover:text-card-foreground mx-5"
+          >
+            <i class="fas fa-sign-in-alt text-lg"></i>
+            <span class="sr-only">Login</span>
+          </a>
+          {{ end }}
+        </nav>
+        <div class="md:hidden">
+          <button class="variant-ghost size-icon">
+            <div class="w-6 h-6 text-card-foreground"></div>
+            <span class="sr-only">Toggle menu</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-6 flex-grow">
       <h2 class="text-3xl font-bold mb-4">Edit Post</h2>
       <form action="/edit_post" method="POST">
-        <input type="hidden" name="post_id" value="{{ .ID }}" />
+        <!-- Use .Post.* because we pass a composite data struct -->
+        <input type="hidden" name="post_id" value="{{ .Post.ID }}" />
         <div class="mb-4">
           <label class="block text-gray-700">Title</label>
           <input
             type="text"
             name="title"
-            value="{{ .Title }}"
+            value="{{ .Post.Title }}"
             class="w-full border rounded p-2"
             required
           />
         </div>
         <div class="mb-4">
           <label class="block text-gray-700">Content</label>
-          <textarea name="content" rows="6" class="w-full border rounded p-2" required>{{- .Content -}}</textarea>
-
+          <textarea
+            name="content"
+            rows="6"
+            class="w-full border rounded p-2"
+            required
+          >{{- .Post.Content -}}</textarea>
         </div>
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
           Update Post
         </button>
         <a
-          href="/post-details?post_id={{ .ID }}"
+          href="/post-details?post_id={{ .Post.ID }}"
           class="ml-4 text-gray-600 hover:underline"
-          >Cancel</a
         >
+          Cancel
+        </a>
       </form>
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-card border-t shadow-sm">
+      <div
+        class="container mx-auto flex justify-between items-center p-4 md:p-6 text-muted-foreground"
+      >
+        <p>&copy; 2024 Talknet. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#Terms" class="hover:text-card-foreground hover:underline"
+            >Terms of Service</a
+          >
+          <a href="#Policy" class="hover:text-card-foreground hover:underline"
+            >Privacy Policy</a
+          >
+          <a
+            href="#ContactUs"
+            class="hover:text-card-foreground hover:underline"
+            >Contact Us</a
+          >
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
