@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Activity Notifications</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/styles/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
   </head>
   <body class="antialiased flex flex-col min-h-screen">
-    <!-- Navbar (copied from your index page, now using .IsLoggedIn instead of .StaticData) -->
-    <header class="navbar bg-card border-b shadow-sm">
+    <!-- Navbar -->
+    <header class="navbar">
       <div
         class="container mx-auto flex items-center justify-between h-16 px-4 md:px-6"
       >
@@ -90,7 +95,7 @@
       {{ end }}
     </main>
 
-    <!-- Footer (consistent with your index page) -->
+    <!-- Footer -->
     <footer class="footer-bg border-t shadow-sm">
       <div
         class="container mx-auto flex justify-between items-center p-4 md:p-6 text-muted-foreground"
