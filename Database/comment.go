@@ -47,3 +47,29 @@ func EditComment(db *sql.DB, commentID int, newContent string) error {
     `, newContent, time.Now(), commentID)
     return err
 }
+
+// GetCommentsByUserID retrieves all comments made by a specific user.
+// It queries the comments table filtering by the user_id.
+func GetCommentsByUserID(db *sql.DB, userID int) ([]structs.Comment, error) {
+	rows, err := db.Query("SELECT id, post_id, user_id, content, created_at FROM comments WHERE user_id = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []structs.Comment
+	for rows.Next() {
+		var comment structs.Comment
+		err := rows.Scan(&comment.ID, &comment.PostID, &comment.UserID, &comment.Content, &comment.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}

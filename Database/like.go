@@ -176,3 +176,37 @@ func GetReactionsByCommentID(db *sql.DB, commentID int) ([]structs.Like, []struc
 
 	return likes, dislikes, nil
 }
+
+
+// GetDislikedPosts retrieves posts that the user has disliked.
+// It does this by joining the Likes_Dislikes table with the Posts table,
+// filtering by the user ID and where like_dislike equals 0.
+func GetDislikedPosts(db *sql.DB, userID int) ([]structs.Post, error) {
+	query := `
+		SELECT p.id, p.user_id, p.title, p.content, p.image_url, p.created_at
+		FROM Likes_Dislikes ld
+		JOIN Posts p ON ld.post_id = p.id
+		WHERE ld.user_id = ? AND ld.like_dislike = 0
+	`
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []structs.Post
+	for rows.Next() {
+		var post structs.Post
+		err := rows.Scan(&post.ID, &post.UserID, &post.Title, &post.Content, &post.ImageURL, &post.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}

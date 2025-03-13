@@ -13,7 +13,6 @@
   </head>
   <body class="antialiased">
     <div id="hiddenDiv" style="display: none">post</div>
-
     <div class="flex flex-col min-h-screen">
       <!-- Navbar -->
       <header class="navbar">
@@ -43,7 +42,7 @@
 
         <hr class="my-4" />
 
-        <!-- Pagination Buttons -->
+        <!-- Toggle Buttons -->
         <div class="flex justify-center mb-4">
           <button
             id="my-posts-btn"
@@ -56,6 +55,18 @@
             class="px-4 py-2 mx-2 bg-blue-500 text-white rounded"
           >
             Likes
+          </button>
+          <button
+            id="disliked-posts-btn"
+            class="px-4 py-2 mx-2 bg-blue-500 text-white rounded"
+          >
+            Dislikes
+          </button>
+          <button
+            id="comments-btn"
+            class="px-4 py-2 mx-2 bg-blue-500 text-white rounded"
+          >
+            Comments
           </button>
         </div>
 
@@ -95,8 +106,6 @@
               <div class="card-content">
                 <p>{{ .Content }}</p>
               </div>
-
-              <!-- ✅ Image (Last Element) -->
               {{ if .ImageURL }}
               <div class="mt-4 flex justify-center">
                 <img
@@ -130,6 +139,57 @@
             {{ range .LikedPosts }} {{ template "postCard" . }} {{ end }}
           </div>
         </div>
+
+        <!-- Disliked Posts Section -->
+        <div id="disliked-posts" class="posts-section" style="display: none">
+          <h1 class="text-2xl font-bold mb-4">Disliked Posts</h1>
+          <div
+            class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 md:p-6"
+          >
+            {{ range .DislikedPosts }} {{ template "postCard" . }} {{ end }}
+          </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div id="comments-section" class="posts-section" style="display: none">
+          <h1 class="text-2xl font-bold mb-4">Comments</h1>
+          <div
+            class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 md:p-6"
+          >
+            {{ range .Comments }}
+            <div
+              class="comment bg-card rounded-lg shadow-lg border p-4 flex flex-col space-y-3"
+            >
+              <!-- Top row: username + timestamp -->
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-muted-foreground">
+                  By:
+                  <span class="font-medium text-card-foreground">
+                    {{ .Username }}
+                  </span>
+                </span>
+                <span class="text-xs text-muted-foreground">
+                  {{ .CreatedAt }}
+                </span>
+              </div>
+
+              <!-- The comment text with bold "Comment:" label -->
+              <div class="text-card-foreground break-all">
+                <span class="font-semibold mr-1">Comment:</span>
+                <span>{{ .Content }}</span>
+              </div>
+
+              <!-- The post link -->
+              <a
+                href="/post-details?post_id={{ .PostID }}"
+                class="text-sm text-blue-500 hover:underline"
+              >
+                Commented on: {{ .PostTitle }}
+              </a>
+            </div>
+            {{ end }}
+          </div>
+        </div>
       </main>
 
       <!-- Footer -->
@@ -155,23 +215,45 @@
       </footer>
     </div>
 
-    <!-- JavaScript for Toggling Posts -->
-    <script src="/static/js/filter.js"></script>
-    <script src="/static/js/like-dislike.js"></script>
+    <!-- JavaScript for Toggling Sections -->
     <script>
+      // Helper function to hide all sections.
+      function hideAllSections() {
+        document.getElementById("my-posts").style.display = "none";
+        document.getElementById("liked-posts").style.display = "none";
+        document.getElementById("disliked-posts").style.display = "none";
+        document.getElementById("comments-section").style.display = "none";
+      }
+
       document
         .getElementById("my-posts-btn")
         .addEventListener("click", function () {
+          hideAllSections();
           document.getElementById("my-posts").style.display = "block";
-          document.getElementById("liked-posts").style.display = "none";
         });
 
       document
         .getElementById("liked-posts-btn")
         .addEventListener("click", function () {
-          document.getElementById("my-posts").style.display = "none";
+          hideAllSections();
           document.getElementById("liked-posts").style.display = "block";
         });
+
+      document
+        .getElementById("disliked-posts-btn")
+        .addEventListener("click", function () {
+          hideAllSections();
+          document.getElementById("disliked-posts").style.display = "block";
+        });
+
+      document
+        .getElementById("comments-btn")
+        .addEventListener("click", function () {
+          hideAllSections();
+          document.getElementById("comments-section").style.display = "block";
+        });
     </script>
+    <script src="/static/js/filter.js"></script>
+    <script src="/static/js/like-dislike.js"></script>
   </body>
 </html>
