@@ -37,3 +37,13 @@ func GetCommentsByPostID(db *sql.DB, postID int) ([]structs.Comment, error) {
 
 	return comments, nil
 }
+
+// EditComment updates an existing comment's content.
+func EditComment(db *sql.DB, commentID int, newContent string) error {
+    _, err := db.Exec(`
+        UPDATE comments
+        SET content = ?, updated_at = ?
+        WHERE id = ?
+    `, newContent, time.Now(), commentID)
+    return err
+}

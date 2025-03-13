@@ -21,6 +21,7 @@ type CommentWithUser struct {
 	DislikeCount int
 	CommentCount int
 	Reaction     int
+	IsOwner      bool // Newly added field
 }
 
 func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
@@ -56,7 +57,7 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Prepare comments with usernames
+	// Prepare comments with usernames and ownership info
 	var commentsWithUser []CommentWithUser
 	for _, comment := range comments {
 		commentUser, err := Database.GetUserByID(db, comment.UserID)
@@ -67,7 +68,7 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 		likes, dislikes, err := Database.GetReactionsByCommentID(db, comment.ID)
 		if err != nil {
-			log.Printf("Failed to get likes: %v", err)
+			log.Printf("Failed to get reactions: %v", err)
 			continue
 		}
 		likeCount := len(likes)
@@ -75,11 +76,17 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 		reaction := -1
 		if isLoggedIn {
-			reaction, err = Database.CheckReactionExists(db, comment.ID, userSessionID,"comment")
+			reaction, err = Database.CheckReactionExists(db, comment.ID, userSessionID, "comment")
 			if err != nil {
 				log.Printf("Failed to check reaction: %v", err)
 				continue
 			}
+		}
+
+		// Determine if the current user is the owner of the comment
+		isOwner := false
+		if isLoggedIn && comment.UserID == userSessionID {
+			isOwner = true
 		}
 
 		commentsWithUser = append(commentsWithUser, CommentWithUser{
@@ -89,6 +96,7 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			LikeCount:    likeCount,
 			DislikeCount: dislikeCount,
 			Reaction:     reaction,
+			IsOwner:      isOwner,
 		})
 	}
 
@@ -98,7 +106,7 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		Username string
 		Comments []CommentWithUser
 	}{
-		Post:     post,  // Now contains ImageURL
+		Post:     post, // Now contains ImageURL
 		Username: user.Username,
 		Comments: commentsWithUser,
 	})

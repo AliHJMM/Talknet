@@ -86,6 +86,14 @@ func main() {
 	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
 		handlers.RenderErrorPage(w, "Error Message", http.StatusInternalServerError)
 	})
+	http.HandleFunc("/edit_comment", func(w http.ResponseWriter, r *http.Request) {
+		handlers.EditCommentHandler(database, w, r)
+	})
+	
+	http.HandleFunc("/delete_comment", func(w http.ResponseWriter, r *http.Request) {
+		handlers.DeleteCommentHandler(database, w, r)
+	})
+	
 
 	// Google OAuth endpoints
 http.HandleFunc("/auth/google/login", handlers.GoogleLoginHandler)
