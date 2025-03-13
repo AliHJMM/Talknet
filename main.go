@@ -93,6 +93,14 @@ func main() {
 	http.HandleFunc("/delete_comment", func(w http.ResponseWriter, r *http.Request) {
 		handlers.DeleteCommentHandler(database, w, r)
 	})
+
+	http.HandleFunc("/edit_post", func(w http.ResponseWriter, r *http.Request) {
+		handlers.EditPostHandler(database, w, r)
+	})
+	http.HandleFunc("/delete_post", func(w http.ResponseWriter, r *http.Request) {
+		handlers.DeletePostHandler(database, w, r)
+	})
+	
 	
 
 	// Google OAuth endpoints

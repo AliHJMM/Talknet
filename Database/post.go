@@ -202,3 +202,14 @@ func GetLikedPosts(db *sql.DB, user_id int) ([]structs.Post, error) {
 
 	return posts, nil
 }
+
+
+// UpdatePost updates an existing post's title and content.
+func UpdatePost(db *sql.DB, postID int, title, content string) error {
+	_, err := db.Exec(`
+        UPDATE Posts
+        SET title = ?, content = ?, updated_at = ?
+        WHERE id = ?
+    `, title, content, time.Now(), postID)
+	return err
+}

@@ -100,15 +100,18 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	// Render the post details template
+	// Render the post details template,
+	// passing CurrentUserID so the template can check ownership
 	err = postDetailTemplate.Execute(w, struct {
-		Post     structs.Post
-		Username string
-		Comments []CommentWithUser
+		Post          structs.Post
+		Username      string
+		Comments      []CommentWithUser
+		CurrentUserID int
 	}{
-		Post:     post, // Now contains ImageURL
-		Username: user.Username,
-		Comments: commentsWithUser,
+		Post:          post, // Now contains ImageURL
+		Username:      user.Username,
+		Comments:      commentsWithUser,
+		CurrentUserID: userSessionID,
 	})
 	if err != nil {
 		log.Printf("Failed to render template: %v", err)

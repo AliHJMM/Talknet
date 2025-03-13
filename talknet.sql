@@ -15,8 +15,10 @@ CREATE TABLE IF NOT EXISTS Posts (
     content TEXT NOT NULL,
     image_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
 );
+
 
 -- Create Comments table
 CREATE TABLE IF NOT EXISTS Comments (
