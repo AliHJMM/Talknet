@@ -8,6 +8,7 @@ import (
 
 	"talknet/Database"
 	"talknet/server/sessions"
+	"talknet/utils"
 )
 
 // CommentData holds the data for a comment including post info.
@@ -136,7 +137,7 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
             Title:          post.Title,
             Content:        post.Content,
             ImageURL:       post.ImageURL,
-            CreatedAt:      timeAgo(post.CreatedAt),
+            CreatedAt:      utils.TimeAgo(post.CreatedAt),
             PostCategories: postCategories,
             LikeCount:      len(likes),
             DislikeCount:   len(dislikes),
@@ -181,7 +182,7 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
             Title:          post.Title,
             Content:        post.Content,
             ImageURL:       post.ImageURL,
-            CreatedAt:      timeAgo(post.CreatedAt),
+            CreatedAt:      utils.TimeAgo(post.CreatedAt),
             PostCategories: postCategories,
             LikeCount:      len(likes),
             DislikeCount:   len(dislikes),
@@ -226,7 +227,7 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
             Title:          post.Title,
             Content:        post.Content,
             ImageURL:       post.ImageURL,
-            CreatedAt:      timeAgo(post.CreatedAt),
+            CreatedAt:      utils.TimeAgo(post.CreatedAt),
             PostCategories: postCategories,
             LikeCount:      len(likes),
             DislikeCount:   len(dislikes),
@@ -252,7 +253,7 @@ func ProfileHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
         commentDataList = append(commentDataList, CommentData{
             ID:        comment.ID,
             Content:   comment.Content,
-            CreatedAt: timeAgo(comment.CreatedAt),
+            CreatedAt: utils.TimeAgo(comment.CreatedAt),
             PostTitle: post.Title,
             PostID:    post.ID,
             Username:  commenter.Username,

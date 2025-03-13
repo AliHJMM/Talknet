@@ -9,6 +9,7 @@ import (
 	"talknet/Database"
 	"talknet/server/sessions"
 	"talknet/structs"
+	"talknet/utils"
 )
 
 var postDetailTemplate = template.Must(template.ParseFiles("static/pages/post-details.html"))
@@ -92,7 +93,7 @@ func PostDetailsHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		commentsWithUser = append(commentsWithUser, CommentWithUser{
 			Comment:      comment,
 			Username:     commentUser.Username,
-			CreatedAt:    timeAgo(comment.CreatedAt),
+			CreatedAt:    utils.TimeAgo(comment.CreatedAt),
 			LikeCount:    likeCount,
 			DislikeCount: dislikeCount,
 			Reaction:     reaction,

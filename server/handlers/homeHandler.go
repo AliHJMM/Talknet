@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 	"talknet/Database"
 	"talknet/server/sessions"
 	"talknet/structs"
+	"talknet/utils"
 	"time"
 )
 
@@ -121,7 +121,7 @@ func HomeHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			Username:       user.Username,
 			Title:          post.Title,
 			Content:        post.Content,
-			CreatedAt:      timeAgo(post.CreatedAt),
+			CreatedAt:      utils.TimeAgo(post.CreatedAt),
 			PostCategories: postCategories,
 			ImageURL:       post.ImageURL, // Now setting ImageURL
 			LikeCount:      likeCount,
@@ -149,28 +149,6 @@ func HomeHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Failed to render template: %v", err)
 		RenderErrorPage(w, "Internal Server Error", http.StatusInternalServerError)
-	}
-}
-
-// timeAgo function to format time
-func timeAgo(t time.Time) string {
-	now := time.Now()
-	diff := now.Sub(t)
-
-	switch {
-	case diff < time.Minute:
-		return "just now"
-	case diff < time.Hour:
-		minutes := int(diff.Minutes())
-		return fmt.Sprintf("%d minute%s ago", minutes, pluralize(minutes))
-	case diff < 24*time.Hour:
-		hours := int(diff.Hours())
-		return fmt.Sprintf("%d hour%s ago", hours, pluralize(hours))
-	case diff < 30*24*time.Hour:
-		days := int(diff.Hours() / 24)
-		return fmt.Sprintf("%d day%s ago", days, pluralize(days))
-	default:
-		return t.Format("2006-01-02") // Fallback to a specific date format
 	}
 }
 

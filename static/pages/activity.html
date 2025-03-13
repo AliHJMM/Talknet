@@ -84,6 +84,7 @@
             <strong>{{ .ActionTaker }}</strong> {{ .Action }} your post
             <em>{{ .PostTitle }}</em> ({{ .CreatedAt }})
           </p>
+
           {{ if eq .Action "comment" }}
           <p class="mt-2 break-words">Comment: {{ .CommentText }}</p>
           {{ end }}

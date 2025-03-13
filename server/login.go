@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"talknet/Database"
 	"talknet/structs"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
